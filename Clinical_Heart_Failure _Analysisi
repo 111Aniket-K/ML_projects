@@ -1,0 +1,61 @@
+
+# attaching the required libraries
+library(ggplot2)
+library(e1071)
+failure_data=read.csv("heart_failure_clinical_records_dataset.csv")  //adding the required files
+str(failure_data)
+failure_data$DEATH_EVENT[failure_data$DEATH_EVENT ==0]<-'No'
+failure_data$DEATH_EVENT[failure_data$DEATH_EVENT ==1]<-'Yes'
+failure_data$DEATH_EVENT=factor(failure_data$DEATH_EVENT)
+str(failure_data) 
+split_data=sample(2,nrow(failure_data), replace = T, prob=c(0.8,0.2))    //train-test splitting
+train_data=failure_data[split_data==1,]
+test_data=failure_data[split_data==2,]
+knn_pred=knn(train_data[-12],test_data[-12], train_data$DEATH_EVENT, k=10)  //using KNN algorithm to build the model  //case 1 k=10
+knn_pred
+confusion=table (knn_pred, test_data$DEATH_EVENT)
+confusion
+confusionMatrix(knn_pred, test_data$DEATH_EVENT)
+> 1-sum(diag(confusion))/nrow(test_data)
+plot(knn_pred~test_data$DEATH_EVENT)
+split_data=sample (2, nrow(failure_data), replace = T, prob=c (0.6,0.4))
+train_data=failure_data[split_data==1,]
+test_data=failure_data[split_data==2,]
+knn_pred=knn(train_data[-12],test_data[-12], train_data$DEATH_EVENT, k=20) //using KNN alfgorithm for case 2  k=20
+ knn_pred
+confusion=table (knn_pred, test_data$DEATH_EVENT)
+confusion
+confusionMatrix(knn_pred, test_data$DEATH_EVENT)
+> 1-sum(diag(confusion))/nrow(test_data)
+plot(knn_pred~test_data$DEATH_EVENT)
+
+
+nb=naiveBayes(DEATH_EVENT~ .,data = train_data)    // Case 1 :using the Naive Bayers algorithm using all the attributes for odel building.
+nb
+#Misclassification error on training data
+nb_predict=predict(nb,train_data)
+tab=table(nb_predict,train_data$DEATH_EVENT)
+tab
+1 - sum(diag(tab))/ sum(tab)
+plot(nb_predict,train_data$DEATH_EVENT)
+#Using confusion matrix function
+confusionMatrix(nb_predict,train_data$DEATH_EVENT
+nb_predict_test=predict(nb,test_data)
+tab2=table(nb_predict_test,test_data$DEATH_EVENT)
+tab2
+                                                        #MISCLASSIFICATION ERROR
+1 - sum(diag(tab2))/ sum(tab2)
+plot(nb_predict_test~test_data$DEATH_EVENT)
+confusionMatrix(nb_predict_test,test_data$DEATH_EVENT)
+
+
+nb=naiveBayes(DEATH_EVENT~age+diabetes+high_blood_pressure,data = train_data)    /// Case 2:Naive Bayers approach for selected attributes
+nb
+                                      #Misclassification error on training data
+nb_predict=predict(nb,train_data)
+tab=table(nb_predict,train_data$DEATH_EVENT)
+tab
+1 - sum(diag(tab))/ sum(tab)
+plot(nb_predict,train_data$DEATH_EVENT)
+                                    #Using confusion matrix function
+confusionMatrix(nb_predict,train_data$DEATH_EVENT)
